@@ -12,7 +12,7 @@ Integration Tests:
   - Test a Leap Year in the Past
   - Test a Leap Year in the Future
 
-Unit Tests:
+Unit Tests (more on their way):
   1. initialize_stores_month
   2. initialize_stores_year
   - invalid_argument_throws_error(a-b)
@@ -26,5 +26,5 @@ Unit Tests:
   - find_start_day (a-c)
   - format_week
   - month_to_Fixnum (a-c)
-(more on their way)
+
 
