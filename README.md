@@ -12,3 +12,19 @@ Integration Tests:
   - Test a Leap Year in the Past
   - Test a Leap Year in the Future
 
+Unit Tests:
+  1. initialize_stores_month
+  2. initialize_stores_year
+  - invalid_argument_throws_error(a-b)
+  - print_month
+    -- from_fixnum (realized I probably won't need this, but haven't refactored yet)
+    -- from_string
+  - print_header (a-c)
+  - print_weekdays
+  - print_full_header
+  - test_if_leap_year
+  - find_start_day (a-c)
+  - format_week
+  - month_to_Fixnum (a-c)
+
+
