@@ -13,16 +13,30 @@ class CalTest < Test::Unit::TestCase
     assert_equal(2013, calendar.year)
   end
 
-  # def test_03_error_with_bad_arguments
-  #   calendar = Cal.new(15, 2021)
-  #   assert_raise ArgumentError do
-  #   end
-  # end
-
-  def test_03_print_month
+  def test_03a_print_month_from_fixnum
     calendar = Cal.new(5, 2013)
     month = calendar.month_to_s
     assert_equal("May", month)
+  end 
+
+  def test_03b_print_month_from_string
+    calendar = Cal.new("January", 2013)
+    month = calendar.month_to_s
+    assert_equal("January", month)
+  end 
+
+  def test_03c_invalid_argument_throws_error
+    calendar = Cal.new(0, 2021)
+    assert_raise ArgumentError do
+      calendar.month_to_s
+    end
+  end 
+
+  def test_03d_invalid_argument_throws_error
+    calendar = Cal.new("Janruary", 2021)
+    assert_raise ArgumentError do
+      calendar.month_to_s
+    end
   end 
 
   def test_04a_print_header
@@ -64,5 +78,24 @@ class CalTest < Test::Unit::TestCase
     assert_equal(false, calendar4.leap_year?)
   end
 
+  def test_09a_find_start_day
+    calendar = Cal.new(4, 2013)
+    assert_equal("Mo", calendar.find_start_day)
+  end
+
+  def test_09b_test_find_start_day
+    calendar = Cal.new(3, 2000)
+    assert_equal("We", calendar.find_start_day)
+  end
+
+  def test_09c_test_find_start_day
+    calendar = Cal.new(1, 2000)
+    assert_equal("Sa", calendar.find_start_day)
+  end
+
+  def test_10_find_week
+    calendar = Cal.new(4, 2013)
+    assert_equal("    1  2  3  4  5  6", calendar.find_week)
+  end
 end
 
