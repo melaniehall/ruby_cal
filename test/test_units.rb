@@ -13,45 +13,43 @@ class CalTest < Test::Unit::TestCase
     assert_equal(2013, calendar.year)
   end
 
-  def test_03a_print_month_from_fixnum
+  def test_03a_invalid_argument_throws_error
+    assert_raise ArgumentError do
+    calendar = Cal.new(0, 2021)
+    end
+  end 
+
+  def test_03b_invalid_argument_throws_error
+    assert_raise ArgumentError do
+    calendar = Cal.new("Janruary", 2021)
+    end
+  end 
+
+  def test_04a_print_month_from_fixnum
     calendar = Cal.new(5, 2013)
     month = calendar.month_to_s
     assert_equal("May", month)
   end 
 
-  def test_03b_print_month_from_string
+  def test_04b_print_month_from_string
     calendar = Cal.new("January", 2013)
     month = calendar.month_to_s
     assert_equal("January", month)
   end 
 
-  def test_03c_invalid_argument_throws_error
-    calendar = Cal.new(0, 2021)
-    assert_raise ArgumentError do
-      calendar.month_to_s
-    end
-  end 
-
-  def test_03d_invalid_argument_throws_error
-    calendar = Cal.new("Janruary", 2021)
-    assert_raise ArgumentError do
-      calendar.month_to_s
-    end
-  end 
-
-  def test_04a_print_header
+  def test_05a_print_header
     calendar = Cal.new(1, 2013)
     header = calendar.print_header
     assert_equal("    January 2013    ", header)
   end
 
-  def test_04b_print_header
+  def test_05b_print_header
     calendar = Cal.new(2, 2013)
     header = calendar.print_header
     assert_equal("   February 2013    ", header)
   end
 
-  def test_05_print_header
+  def test_05c_print_header
     calendar = Cal.new(3, 2013)
     header = calendar.print_header
     assert_equal("     March 2013     ", header)
@@ -93,9 +91,29 @@ class CalTest < Test::Unit::TestCase
     assert_equal("Sa", calendar.find_start_day)
   end
 
-  def test_10_find_week
+  def test_10_format_week
     calendar = Cal.new(4, 2013)
-    assert_equal("    1  2  3  4  5  6", calendar.find_week)
+    assert_equal("    1  2  3  4  5  6", calendar.format_week)
+  end
+
+  def test_11a_month_to_Fixnum
+    calendar = Cal.new(4, 2013)
+    assert_equal(4, calendar.month_to_Fixnum)
+  end
+
+  def test_11b_month_to_Fixnum
+    calendar = Cal.new("May", 2013)
+    assert_equal(5, calendar.month_to_Fixnum)
+  end
+
+  def test_11c_month_to_Fixnum
+    calendar = Cal.new("5", 2013)
+    assert_equal(5, calendar.month_to_Fixnum)
+  end
+
+  def test_12_format_week
+    calendar = Cal.new(5, 2013)
+    assert_equal( example, calendar.format_week)
   end
 end
 
