@@ -5,8 +5,8 @@ class Cal
   MONTH_NUMBER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   MONTH_NUMBER_STRING = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
   DAYS_ARRAY = %w[Su Mo Tu We Th Fr Sa]
-  MONTHS_WITH_30_DAYS = %w[September April June Novemeber]
-  MONTHS_WITH_31_DAYS = %w[January March May July August September December]
+  MONTHS_WITH_30_DAYS = %w[September April June November]
+  MONTHS_WITH_31_DAYS = %w[January March May July August September October December]
   YEAR_RANGE = (1800..3000)
 
   def initialize( month = nil, year = nil)
@@ -77,7 +77,7 @@ class Cal
     current_month = month_name(month)
     current_year = year
     if MONTHS_WITH_30_DAYS.include?(current_month)
-      return 30;
+      return 30
     elsif MONTHS_WITH_31_DAYS.include?(current_month)
       return 31
     elsif current_month === "February"
@@ -161,7 +161,7 @@ class Cal
   def format_week(week, month, year) #weeks are zero indexed
     index_of_start = start_day_index(month, year)
     month_days = days_in_month(month, year)
-    first_week_days = 7 - index_of_start
+    first_week_days = 7 - index_of_start 
     formatted_week = ""
     if week == 0 #if first_week? (week == 0)
       empty_days = 7 - first_week_days
@@ -186,72 +186,105 @@ class Cal
 
   end
 
-  def format_weeks_for_3_months(week, year) #weeks are zero indexed
-    month_start = week + 2
+  def format_weeks_for_3_months(month_index, year) #weeks are zero indexed
+    month_start = month_index.to_i
     month_end = month_start + 2
     formatted_week = ""
-    while week < 6 
-
-    MONTHS[0..2].each{|x| formatted_week += format_week(week, MONTHS.index(x) + 1, year) + "  "} 
-    formatted_week = formatted_week.chomp("  ")
-    formatted_week = "#{formatted_week}\n"
-    week += 1
-    end
+    week_num = 0
+      while week_num < 6 
+        MONTHS[month_start..month_end].each{| month | formatted_week += format_week(week_num, MONTHS.index(month) + 1, year) + "  "} 
+        formatted_week = formatted_week.chomp("  ")
+        formatted_week = "#{formatted_week}\n"
+        week_num += 1
+      end
     
-    return formatted_week.chomp("  ")
+      return formatted_week.chomp("  ")
 
   end
 
-  def format_week_for_year(week, month, year) #weeks are zero indexed
-    index_of_start = start_day_index(month, year)
-    month_days = days_in_month(month, year)
-    first_week_days = 7 - index_of_start
-    formatted_week = ""
-    if week == 0 #if first_week? (week == 0)
-      empty_days = 7 - first_week_days
-      empty_days.times { formatted_week += "   " }
-      first_date = 1
-      last_date = first_week_days
-    else
-      first_date = first_week_days + 1 + ((week - 1) * 7)
-      last_date = first_date + 6 > month_days ? month_days : first_date + 6
-    end
-    (first_date..last_date).each do | date |
-      formatted_week += " " if date < 10
-      formatted_week += "#{date}"
-      formatted_week += " " unless date == last_date
-    end
-    formatted_week
-  end
+  # def format_calendar(year)
+  #   week = 0
+  #   month_to_print = ""
+  #   while week < 12
+  #     month_to_print += format_weeks_for_3_months(week, year)
+  #     week += 2
+  #   end
+
+  # end
+
+  # def format_week_for_year(week, month, year) #weeks are zero indexed
+  #   index_of_start = start_day_index(month, year)
+  #   month_days = days_in_month(month, year)
+  #   first_week_days = 7 - index_of_start
+  #   formatted_week = ""
+  #   if week == 0 #if first_week? (week == 0)
+  #     empty_days = 7 - first_week_days
+  #     empty_days.times { formatted_week += "   " }
+  #     first_date = 1
+  #     last_date = first_week_days
+  #   else
+  #     first_date = first_week_days + 1 + ((week - 1) * 7)
+  #     last_date = first_date + 6 > month_days ? month_days : first_date + 6
+  #   end
+  #   (first_date..last_date).each do | date |
+  #     formatted_week += " " if date < 10
+  #     formatted_week += "#{date}"
+  #     formatted_week += " " unless date == last_date
+  #   end
+  #   formatted_week
+  # end
 
   def format_month(month, year)
     formatted_month = ""
-    (0..5).each{|x| formatted_month += format_week(x, month, year) + "\n"}
+    formatted_month += print_full_header(month, year) + "\n"
+    (0..5).each{|week| formatted_month += format_week(week, month, year) + "\n"}
     formatted_month 
   end
 
   def format_year(month, year)
-
-
+    week = 0
+    month = 1
+    output = ""
+    output += print_year_header(year) + "\n\n"
+    until week >= 12
+      output += print_3_month_header(month) + "\n"
+      output += print_3_month_week_header + "\n"
+      output += format_weeks_for_3_months(week, year)
+    week += 3
+    month += 3
+    end
+    output
   end
 
-  def format_cal
-    puts print_year_header(year)
-    puts print_3_month_header(1)
-    puts print_3_month_week_header
-    puts format_weeks_for_3_months(0, year)
-    puts print_3_month_header(4)
-    puts print_3_month_week_header
-    puts format_weeks_for_3_months(0, year)
-    # puts print_full_header(month, year)
-    # puts format_month(month, year)
+  def print_cal
+    if month === "all"
+    puts format_year(month, year)
+    else 
+    puts format_month(month, year)
+    end
+
+    # puts print_year_header(year)
+    # puts "\n"
+    # puts print_3_month_header(1)
+    # puts print_3_month_week_header
+    # puts format_weeks_for_3_months(0, year)
+    # puts print_3_month_header(4)
+    # puts print_3_month_week_header
+    # puts format_weeks_for_3_months(3, year)
+    # puts print_3_month_header(7)
+    # puts print_3_month_week_header
+    # puts format_weeks_for_3_months(6, year)
+    # puts print_3_month_header(10)
+    # puts print_3_month_week_header
+    # puts format_weeks_for_3_months(9, year)
+
   end
 
 if __FILE__ == $0
   month = ARGV[0]
   year = ARGV[1]
   cal = Cal.new(month, year)
-  cal.format_cal
+  cal.print_cal
 end
 
 end

@@ -113,8 +113,8 @@ class CalTest < Test::Unit::TestCase
   end
 
   def test_15b_days_in_month_for_31_day_month
-    calendar = Cal.new(5, 2013)
-    assert_equal(31, calendar.days_in_month(5, 2013))
+    calendar = Cal.new(10, 2013)
+    assert_equal(31, calendar.days_in_month(10, 2013))
   end
 
   def test_15c_days_in_month_for_february_leap_year
