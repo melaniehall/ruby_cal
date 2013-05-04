@@ -56,23 +56,6 @@ class Cal
     end
   end
 
-  # def month_to_Fixnum
-  #   month = @month
-  #   if month.class == Fixnum
-  #     return month
-  #   end
-  #   if month.class == String
-  #     if MONTHS.include?(month)
-  #       index = MONTHS.index(month)
-  #       return MONTHS.index(month) + 1
-  #     elsif MONTH_NUMBER.include?(month)
-  #       return MONTH_NUMBER.index(month) + 1
-  #     end
-  #   else
-  #       raise ArgumentError, "#{@month} is neither a month number (1..12) nor a name"
-  #   end
-  # end
-
   def days_in_month (month, year)
     current_month = month_name(month)
     current_year = year
@@ -202,38 +185,6 @@ class Cal
 
   end
 
-  # def format_calendar(year)
-  #   week = 0
-  #   month_to_print = ""
-  #   while week < 12
-  #     month_to_print += format_weeks_for_3_months(week, year)
-  #     week += 2
-  #   end
-
-  # end
-
-  # def format_week_for_year(week, month, year) #weeks are zero indexed
-  #   index_of_start = start_day_index(month, year)
-  #   month_days = days_in_month(month, year)
-  #   first_week_days = 7 - index_of_start
-  #   formatted_week = ""
-  #   if week == 0 #if first_week? (week == 0)
-  #     empty_days = 7 - first_week_days
-  #     empty_days.times { formatted_week += "   " }
-  #     first_date = 1
-  #     last_date = first_week_days
-  #   else
-  #     first_date = first_week_days + 1 + ((week - 1) * 7)
-  #     last_date = first_date + 6 > month_days ? month_days : first_date + 6
-  #   end
-  #   (first_date..last_date).each do | date |
-  #     formatted_week += " " if date < 10
-  #     formatted_week += "#{date}"
-  #     formatted_week += " " unless date == last_date
-  #   end
-  #   formatted_week
-  # end
-
   def format_month(month, year)
     formatted_month = ""
     formatted_month += print_full_header(month, year) + "\n"
@@ -262,22 +213,6 @@ class Cal
     else 
     puts format_month(month, year)
     end
-
-    # puts print_year_header(year)
-    # puts "\n"
-    # puts print_3_month_header(1)
-    # puts print_3_month_week_header
-    # puts format_weeks_for_3_months(0, year)
-    # puts print_3_month_header(4)
-    # puts print_3_month_week_header
-    # puts format_weeks_for_3_months(3, year)
-    # puts print_3_month_header(7)
-    # puts print_3_month_week_header
-    # puts format_weeks_for_3_months(6, year)
-    # puts print_3_month_header(10)
-    # puts print_3_month_week_header
-    # puts format_weeks_for_3_months(9, year)
-
   end
 
 if __FILE__ == $0
@@ -288,4 +223,3 @@ if __FILE__ == $0
 end
 
 end
-
