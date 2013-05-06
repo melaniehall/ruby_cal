@@ -1,3 +1,4 @@
+
 class Cal
   attr_accessor :month, :year 
 
@@ -5,6 +6,10 @@ class Cal
   MONTH_NUMBER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   MONTH_NUMBER_STRING = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
   DAYS_ARRAY = %w[Su Mo Tu We Th Fr Sa]
+  
+    # since actual day names aren't used to generate the calendar, DAYS_ARRAY can just be a string
+    # to be printed out as a heading w/the rest of the calendar
+  
   MONTHS_WITH_30_DAYS = %w[September April June November]
   MONTHS_WITH_31_DAYS = %w[January March May July August September October December]
   YEAR_RANGE = (1800..3000)
@@ -39,6 +44,9 @@ class Cal
 
     else 
       @month = 5 #current month
+      
+        # this is where you can use Time.new.month & Time.new.year
+      
       @year = 2013 #current year
     end
   end
@@ -85,6 +93,10 @@ class Cal
 
   def print_weekdays
     DAYS_ARRAY.join(" ")
+    
+    # since the line of day abbreviations never changes, this can prob. just be printed out as a set string,
+    # rather than pulling/joining from an array
+    
   end
 
   def print_3_month_header(month)
@@ -137,6 +149,9 @@ class Cal
   end
 
   def start_day_index(month, year)
+  
+    # start_day and start_day_index are not both required
+  
     start = find_start_day(month, year)
     index_of_start = DAYS_ARRAY.index(start)
   end
@@ -216,6 +231,10 @@ class Cal
   end
 
 if __FILE__ == $0
+
+ # This section could be moved to it's own file. Separate out the year-specific methods into their own file and 
+ # require both in your executible .rb file. 
+
   month = ARGV[0]
   year = ARGV[1]
   cal = Cal.new(month, year)
