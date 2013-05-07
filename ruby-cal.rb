@@ -11,134 +11,100 @@ class Cal
 
   def initialize( month = nil, year = nil)
     if month && year
-      month_int = month.to_i
-      year_int = year.to_i
-        if month_int == 0
-          if MONTHS.include?(month)
-            @month = MONTHS.index(month) + 1
-            # index = MONTHS.index(month)
-            # @month = MONTHS[index]
-          else
-            raise ArgumentError, "#{month} is neither a month number (1..12) nor a name"
-          end
-          
-        else 
-          raise ArgumentError, "#{month} is neither a month number (1..12) nor a NAME" if !MONTH_NUMBER.include?(month_int)
-          @month = month_int
+      month_number = month.to_i
+      year_number = year.to_i
+        
+        if month_number == 0
+          raise ArgumentError, "#{month} is neither a month number (1..12) nor a name" if !MONTHS.include?(month)
+          @month = MONTHS.index(month) + 1
+        else
+          @month = month_number
+          raise ArgumentError, "#{month} is neither a month number (1..12) nor a NAME" if !MONTH_NUMBER.include?(month_number)
         end
-      @year = year_int
-
+      @year = year_number
+      raise ArgumentError, "#{year} is not in the year range of 1800..3000" if !YEAR_RANGE.include?(@year) 
+    
     elsif month && year.nil?
-      month_int = month.to_i
+      year_number = month.to_i
       @month = "all"
-      @year = month.to_i
-
-      if !YEAR_RANGE.include?(month_int) 
+      @year = year_number
+      if !YEAR_RANGE.include?(year_number) 
         raise ArgumentError, "#{month} is an invalid calendar entry."
       end
 
-    else 
-      @month = 5 #current month
-      @year = 2013 #current year
+    else
+      @month = Time.new.month
+      @year = Time.new.year
     end
   end
 
   def month_name month
-    if month > 0
-      return MONTHS[month - 1]
-    else 
-      if MONTHS.include?(month)
-        index = MONTHS.index(month)
-        return MONTHS[index]
-      else 
-        raise ArgumentError, "#{month} is neither a month number (1..12) nor a name"
-      end
-    end
+    MONTHS[month - 1]
   end
 
   def days_in_month (month, year)
     current_month = month_name(month)
     current_year = year
+    days_in_month = ""
     if MONTHS_WITH_30_DAYS.include?(current_month)
-      return 30
+      days_in_month = 30
     elsif MONTHS_WITH_31_DAYS.include?(current_month)
-      return 31
+      days_in_month = 31
     elsif current_month === "February"
       if self.leap_year?
-        return 29
+        days_in_month = 29
       else 
-        return 28
+        days_in_month = 28
       end
     end
+    days_in_month
   end
 
-  def print_year_header year
-    year = year.to_s
-    year.center(64)
-  end
-
-  def print_header month, year
+  def print_month_header month, year
     month = month_name(month)
     header = "#{month} #{year}"
-    header.center(20)
+    header.center(20).rstrip
   end
 
   def print_weekdays
     DAYS_ARRAY.join(" ")
   end
 
-  def print_3_month_header(month)
-    month_start = month - 1
-    three_month_header = ""
-    last_index = month_start + 2
-    MONTHS[month_start..last_index].each {|month| month === MONTHS[last_index] ? three_month_header += month.center(20) : three_month_header += month.center(20) + "  "}
-    three_month_header
-  end
-
-  def print_3_month_week_header
-    week_header = ""
-    3.times do |x| 
-      x === 3 ? week_header += DAYS_ARRAY.join(" ") : week_header += DAYS_ARRAY.join(" ") + "  "
-    end
-    return week_header.chomp("  ")
-  end
-
   def print_full_header month, year
-    month_header = print_header(month, year)
+    month_header = print_month_header(month, year)
     weekdays = print_weekdays
     full_header = "#{month_header}\n#{weekdays}"
   end
 
   def leap_year?
     if @year%400 === 0
-       true
+      true
     elsif @year%100 === 0 
-       false
+      false
     elsif @year%4 === 0
-       true
+      true
     else
-       false
+      false
     end
   end
 
-  def find_start_day (month, year)
+  def find_start_day_index (month, year)
+    #Zeller's Congruence(http://en.wikipedia.org/wiki/Zeller's_congruence) 
     m = month
     y = year
-    q = 1 #first day of month
-
+    q = 1
     if m < 3
       m += 12
       y = y - 1
     end
-    
     h = ((q + (((m + 1) *26 )/10) + y + (y/4) + (6 * (y/100)) + (y/400))%7)
-
-    start_day = h - 1
+    start_day = DAYS_ARRAY[h - 1]
+    index_of_start = DAYS_ARRAY.index(start_day)
   end
 
-  def format_week(week, month, year) #weeks are zero indexed
-    index_of_start = start_day_index(month, year)
-    month_days = days_in_month(month, year)
+  def format_week(week, month, year)#weeks are zero indexed
+    index_of_start = find_start_day_index(month, year)
+    days_in_month = days_in_month(month, year)
     first_week_days = 7 - index_of_start 
     formatted_week = ""
     if week == 0 #if first_week? (week == 0)
@@ -148,36 +114,21 @@ class Cal
       last_date = first_week_days
     else
       first_date = first_week_days + 1 + ((week - 1) * 7)
-      last_date = first_date + 6 > month_days ? month_days : first_date + 6
-
+      last_date = first_date + 6 > days_in_month ? days_in_month : first_date + 6
     end
     (first_date..last_date).each do | date |
       formatted_week += " " if date < 10
       formatted_week += "#{date}"
       formatted_week += " " unless date == last_date
     end
-    if formatted_week.length < 20
-      extra_space = 20 - formatted_week.length
-      extra_space.times {formatted_week += " "}
+    #Add extra spacing if printing for a year
+    if @month === "all"
+      if formatted_week.length < 20
+        extra_space = 20 - formatted_week.length
+        extra_space.times {formatted_week += " "}
+      end
     end  
     formatted_week
-
-  end
-
-  def format_weeks_for_3_months(month_index, year) #weeks are zero indexed
-    month_start = month_index.to_i
-    month_end = month_start + 2
-    formatted_week = ""
-    week_num = 0
-      while week_num < 6 
-        MONTHS[month_start..month_end].each{| month | formatted_week += format_week(week_num, MONTHS.index(month) + 1, year) + "  "} 
-        formatted_week = formatted_week.chomp("  ")
-        formatted_week = "#{formatted_week}\n"
-        week_num += 1
-      end
-    
-      return formatted_week.chomp("  ")
-
   end
 
   def format_month(month, year)
@@ -187,16 +138,64 @@ class Cal
     formatted_month 
   end
 
+# YEAR VIEW
+
+  def print_year_header year
+    year = year.to_s
+    year.center(63).rstrip
+  end
+
+  def print_3_month_header(month)
+    month_start_index = month - 1
+    three_month_header = ""
+    last_index = month_start_index + 2
+    MONTHS[month_start_index..last_index].each do |month|
+      if month === MONTHS[last_index]
+        three_month_header += month.center(20).rstrip
+      else
+        three_month_header += month.center(20) + "  "
+      end
+    end
+    three_month_header
+  end
+
+  def print_3_month_week_header
+    week_header = ""
+    3.times do |x|
+      x === 3 ? week_header += DAYS_ARRAY.join(" ") : week_header += DAYS_ARRAY.join(" ") + "  "
+    end
+    return week_header.chomp("  ")
+  end
+
+  def format_weeks_for_3_months(month_index, year) #weeks are zero indexed
+    month_start = month_index.to_i
+    month_end = month_start + 2
+    formatted_week = ""
+    week_number = 0
+      while week_number < 6
+        MONTHS[month_start..month_end].each do | month |
+          if month === MONTHS[month_end]
+            formatted_week += format_week(week_number, MONTHS.index(month) + 1, year).rstrip
+          else
+            formatted_week += format_week(week_number, MONTHS.index(month) + 1, year) + "  "
+          end
+        end
+        formatted_week = "#{formatted_week}\n"
+        week_number += 1
+      end
+    formatted_week.chomp("  ")
+  end
+
   def format_year(month, year)
-    week = 0
+    month_index = 0
     month = 1
     output = ""
     output += print_year_header(year) + "\n\n"
-    until week >= 12
+    until month_index >= 12
       output += print_3_month_header(month) + "\n"
       output += print_3_month_week_header + "\n"
-      output += format_weeks_for_3_months(week, year)
-    week += 3
+      output += format_weeks_for_3_months(month_index, year)
+    month_index += 3
     month += 3
     end
     output
@@ -210,11 +209,11 @@ class Cal
     end
   end
 
+end
+
 if __FILE__ == $0
   month = ARGV[0]
   year = ARGV[1]
   cal = Cal.new(month, year)
   cal.print_cal
-end
-
 end
