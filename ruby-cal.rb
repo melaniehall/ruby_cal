@@ -133,12 +133,7 @@ class Cal
     
     h = ((q + (((m + 1) *26 )/10) + y + (y/4) + (6 * (y/100)) + (y/400))%7)
 
-    start_day = DAYS_ARRAY[h - 1]
-  end
-
-  def start_day_index(month, year)
-    start = find_start_day(month, year)
-    index_of_start = DAYS_ARRAY.index(start)
+    start_day = h - 1
   end
 
   def format_week(week, month, year) #weeks are zero indexed
